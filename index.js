@@ -24,6 +24,11 @@ if (!validArgs) {
     process.exit();
 }
 
+function fsReadDirPromise() {
+
+}
+
 fs.readdir(sourceDir, (err, listing) => {
     console.log(listing);
 });
+
