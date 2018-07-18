@@ -57,23 +57,41 @@ function filterImageExtensions(fileName) {
 }
 
 function resize(file, destinationDir, resizeDivisor) {
-    const image = sharp(sourceDir + '/' + file);
-    image.metadata().then((metadata)=>{
-        return image.resize(Math.round(metadata.width / resizeDivisor)).toFile(destinationDir + '/' + file);
+    return new Promise((resolve, reject) => {
+        const imagePath = `${sourceDir}/${file}`;
+        const image = sharp(imagePath);
+        image.metadata().then((metadata)=>{
+            image.resize(Math.round(metadata.width / resizeDivisor))
+            .toFile(destinationDir + '/' + file)
+            .then((output) => {
+                console.log(`Resized ${file} to width: ${output.width} height: ${output.height}`);
+                resolve();
+            }).catch((err) => {
+                console.log(`Failed to resize ${imagePath}`);
+                reject(err);
+                return;
+            });
+        }).catch((err) => {
+            console.log(`Failed to get metadata for ${imagePath}`);
+            reject(err);
+            return;
+        });
     });
 }
 
 const readdir = util.promisify(fs.readdir);
 
-readdir(sourceDir).then((listing) => {
+readdir(sourceDir)
+.then((listing) => {
     let imageList = listing.filter(filterImageExtensions);
     let resizePromises = [];
     for (let file of imageList) {
         resizePromises.push(resize(file, destinationDir, resizeDivisor));
     }
-    Promise.all(resizePromises).then(()=>{
-    }).then(()=>{
-        console.log('Done!');
+    Promise.all(resizePromises).then(() => {
+        console.log('Done!!!');
+    }).catch((err) => {
+        console.log(err);
     });
 }).catch((err) => {
     console.log(err)
