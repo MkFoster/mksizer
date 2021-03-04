@@ -10,6 +10,6 @@ git clone https://github.com/MkFoster/mksizer.git
 ## Usage
 From the command line:
 
-node index.js imageSourceFolder resizedImageDestinationFolder redunctionFactor
+node index.js imageSourceFolder resizedImageDestinationFolder reductionFactor
 
 I.e. "node index.js testimages output 8"
